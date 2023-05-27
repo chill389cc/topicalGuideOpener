@@ -7,16 +7,24 @@ import { fileURLToPath } from 'url';
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
 const csvFileName = 'scriptures.csv'
+const progressFileName = 'place.txt'
 ;(async ()=> {
   let i
   try {
     const fileStr = fs.readFileSync(path.resolve(__dirname, csvFileName), 'utf8')
     const rows = fileStr.split('\r\n')
-    const response = await enquirer.prompt({
-      type: 'input', name: 'index',
-      message: 'What index do you want to start at?'
-    });
-    const index = parseInt(response.index)
+    let index
+    try {
+      const progressFileStr = fs.readFileSync(path.resolve(__dirname, progressFileName), 'utf8')
+      index = parseInt(progressFileStr)
+    } catch (e) {
+      const response = await enquirer.prompt({
+        type: 'input', name: 'index',
+        message: 'What index do you want to start at?'
+      });
+      index = parseInt(response.index)
+    }
+
     if ( index < 1 || index >= rows.length ) {
       console.error(`Index out of bounds, must be at least 1 and no more than ${rows.length - 1}}`)
       return
@@ -35,7 +43,8 @@ const csvFileName = 'scriptures.csv'
       }
       console.clear()
     }
-    printBold(`You finished on index ${i}. Continue one index ${i+1} next time.`)
+    printBold(`You finished on index ${i}. Continue on index ${i+1} next time.`)
+    fs.writeFileSync(path.resolve(__dirname, progressFileName), (i+1).toString())
   } catch (e) {
     console.error('Unexpected Error:', e)
   }
