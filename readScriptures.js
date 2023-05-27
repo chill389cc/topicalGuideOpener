@@ -30,10 +30,21 @@ const progressFileName = 'place.txt'
       return
     }
     for (i = index; i < rows.length; i++) {
-      const url = new URL(rows[i].split(',')[2].replaceAll('"',''))
-      await open(url.toString())
+      const rowItems = rows[i].split('","')
+      const urlStr = rowItems[2].replaceAll('"','')
+      const topicName = rowItems[0].replaceAll('"','')
+      const scriptureName = rowItems[1]
+      let url
+      try {
+        url = new URL(urlStr)
+        await open(url.toString())
+      } catch (e) {
+        printBold(`Error parsing URL. View this page manually: ${rows[i]}`)
+      }
+      printBold(`Viewing ${scriptureName} (in the ${topicName} section)`)
+      printBold(`This is scripture ${i}/${rows.length-1} (%${Math.floor(100*i/(rows.length-1))}).`)
       const prompt = new enquirer.Toggle({
-        message: `You just viewed scripture ${i}. View another?`,
+        message: `View another?`,
         disabled: 'Yes',
         enabled: 'No, quit.'
       });
