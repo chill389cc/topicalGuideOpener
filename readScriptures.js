@@ -43,6 +43,7 @@ const progressFileName = 'place.txt'
       }
       printBold(`Viewing ${scriptureName} (in the ${topicName} section)`)
       printBold(`This is scripture ${i}/${rows.length-1} (%${Math.floor(100*i/(rows.length-1))}).`)
+    fs.writeFileSync(path.resolve(__dirname, progressFileName), (i+1).toString())
       const prompt = new enquirer.Toggle({
         message: `View another?`,
         disabled: 'Yes',
